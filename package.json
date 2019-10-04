@@ -1,0 +1,23 @@
+{
+  "name": "deduplicator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "scripts": {
+    "start": "WEBPACK_ENV=local webpack-dev-server --port 8080 --host 0.0.0.0"
+  },
+  "author": "Lukas Pukenis",
+  "license": "ISC",
+  "devDependencies": {
+    "fork-ts-checker-webpack-plugin": "^1.5.0",
+    "happypack": "^5.0.1",
+    "ts-loader": "^6.2.0",
+    "webpack": "^4.41.0",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.2"
+  },
+  "dependencies": {
+    "@types/jsdom": "^12.2.4",
+    "@types/node": "^12.7.11"
+  }
+}
