@@ -10,28 +10,14 @@ const path = require("path");
 const args = minimist(process.argv.slice(2));
 /* eslint-enable no-magic-numbers */
 
-const REVISION = require("child_process")
-	.execSync("git rev-parse HEAD")
-	.toString()
-	.trim();
 const ENV = args.environment || process.env.WEBPACK_ENV || "local";
 const IS_DEV = ENV === "local" || ENV === "dev";
-const IS_PROD = ENV === "prod";
-const DEV_API = IS_DEV;
-const BUILD_VERSION = args.buildVersion || "undefined";
-if (BUILD_VERSION === "undefined" && ENV !== "local") console.warn('Undefined "buildVersion" build parameter');
+const IS_PROD = !IS_DEV;
 
 const plugins = [
-	new webpack.DefinePlugin({ REVISION: JSON.stringify(REVISION) }),
 	new webpack.DefinePlugin({ ENV: JSON.stringify(ENV) }),
 	new webpack.DefinePlugin({ IS_DEV: IS_DEV }),
-	new webpack.DefinePlugin({ IS_PROD: IS_PROD }),
-	new webpack.DefinePlugin({ DEV_API: DEV_API }),
-	new webpack.DefinePlugin({
-		VERSIONS: {
-			BUILD_VERSION: JSON.stringify(BUILD_VERSION),			
-		}
-	})	
+	new webpack.DefinePlugin({ IS_PROD: IS_PROD })
 ];
 
 plugins.push(
@@ -104,6 +90,7 @@ module.exports = {
 		},
 		disableHostCheck: true
 	},
+	target: 'node',
 	plugins: plugins,
 	devtool: "source-map"
 };

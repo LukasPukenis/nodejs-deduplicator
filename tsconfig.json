@@ -3,31 +3,14 @@
 		"esModuleInterop": true,
 		"outDir": "./build/js/",
 		"noImplicitAny": true,
-		"module": "es6",
+		// "module": "commonjs",
 		"target": "es6",
 		"allowJs": true,
 		"skipLibCheck": true,
-		"lib": ["es2016", "dom", "esnext"],
+		"lib": ["es2016", "esnext"],
 		"typeRoots": ["node_modules/@types/"],
-		"moduleResolution": "node",
-    	"types": ["jsdom"]
-
-    //"noUnusedLocals": true,
-    //"noErrorTruncation": true,
-    //"strict": true
+		"moduleResolution": "node"
 	},
-	"files": ["src/types/global.d.ts"],
 	"include": ["src/**/*.ts"],
-	"exclude": ["node_modules/**/*", "dist/**/*", "libs/**/*"],
-	"typedocOptions": {
-		"mode": "file",
-		"theme": "minimal",
-		"excludePrivate": true,
-		"excludeProtected": true,
-		"excludeExternals": true,
-    "excludeNotExported": true,
-    "includeDeclarations": true,
-    "target": "ES6",
-    "out": "docs/js/latest"
-	}
+	"exclude": ["node_modules/**/*", "dist/**/*", "libs/**/*"]
 }

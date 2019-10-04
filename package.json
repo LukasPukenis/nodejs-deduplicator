@@ -4,7 +4,7 @@
   "description": "",
   "main": "webpack.config.js",
   "scripts": {
-    "start": "WEBPACK_ENV=local webpack-dev-server --port 8080 --host 0.0.0.0"
+    "start": "WEBPACK_ENV=local webpack --port 8080 --host 0.0.0.0"
   },
   "author": "Lukas Pukenis",
   "license": "ISC",
@@ -18,6 +18,11 @@
   },
   "dependencies": {
     "@types/jsdom": "^12.2.4",
-    "@types/node": "^12.7.11"
+    "@types/md5-file": "^4.0.0",
+    "@types/node": "^12.7.11",
+    "@types/yargs": "^13.0.3",
+    "md5-file": "^4.0.0",
+    "minimist": "^1.2.0",
+    "yargs": "^14.0.0"
   }
 }
