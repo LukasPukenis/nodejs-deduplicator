@@ -1,0 +1,6 @@
+this is a 
+multiline test
+string
+
+123
+EOF
