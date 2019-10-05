@@ -1,15 +1,21 @@
 import fs from 'fs';
 
 import { FileLogger, ILogger } from './logger';
+import { ReadLine } from 'readline';
+import { asyncGetFilesRecursive, shortenPath } from './utils/utils';
 
 const md5File = require('md5-file/promise');
 const endOfLine = require('os').EOL;
 const readlineSync = require('readline-sync');
 const nodeCleanup = require('node-cleanup');
 const chalk = require('chalk');
+const readline = require('readline');
 
-const { resolve } = require('path');
-const { readdir } = require('fs').promises;
+const FILE_LIST = 'deduplicate-list';
+const LOCK_FILE = 'deduplicate.lock';
+// to enable resuming we must know the current offset/position of a file cursor
+// thus we set our own custom window size so we would have fine granularity for resuming
+const HIGH_WATERMARK = 1024;
 
 // hashes are calculated for each file in the file list. If the file list is huge it may produce a lot of
 // unecessary overhead of calculating a lot of stuff at once. Hash calculation is offloaded to web worker
@@ -18,39 +24,11 @@ const MAX_CONCURRENT_HASHES = 10; // todo: choose best for my machine
 
 type Hashtable = Map<string, string>;
 
-/**
- * read through the directories recursively and if file is met - emit filename, else run recursive generator iterator
- */
-async function* getFiles(dir: string): AsyncGenerator<string> {
-  const entries = await readdir(dir, { withFileTypes: true });
-
-  for (const entry of entries) {
-    // construct the full path
-    const res = resolve(dir, entry.name);
-
-    // recursive part
-    if (entry.isDirectory()) {
-      yield* getFiles(res);
-    } else {
-      yield res;
-    }
-  }
-}
-
-function shortenPath(path: string, maxSymbols: number = 40): string {
-    const len = path.length;
-    return '...' + path.slice(len - maxSymbols);
-}
-
-const FILE_LIST = 'deduplicate-list';
-const LOCK_FILE = 'deduplicate.lock';
-const HIGH_WATERMARK = 1024;
-
 export class Deduplicator {
     private resultLogger: ILogger;
     private verbose: boolean;
     private bytesRead: [number, number];
-    private lineReader: any;
+    private lineReader: ReadLine;
     private aborted: boolean;
 
     constructor(private path: string, resultPath: string) {
@@ -151,7 +129,7 @@ export class Deduplicator {
 
         const fileListStream = fs.createWriteStream(FILE_LIST, { flags: 'a'});
 
-        for await (const filename of getFiles(this.path)) {
+        for await (const filename of asyncGetFilesRecursive(this.path)) {
             fileListStream.write(filename + endOfLine);
         }
 
@@ -194,7 +172,7 @@ export class Deduplicator {
      */
     private async _process(offset = 0): Promise<Hashtable> {
         if (this.verbose) {
-            console.log(`Processing from ${offset}`);
+            console.log(`Processing from offset: ${offset}`);
         }
 
         const hashmap: Hashtable = new Map();
@@ -213,7 +191,7 @@ export class Deduplicator {
             // todo: the more proper way would be to manually read from the file into a buffer, glue all the lines
             // manually as well and have unlimited paths but that increases complexity
             const inputReadStream = require('fs').createReadStream(FILE_LIST, {highWaterMark: HIGH_WATERMARK, start: offset});
-            this.lineReader = require('readline').createInterface({
+            this.lineReader = readline.createInterface({
                 input: inputReadStream
             });
 
