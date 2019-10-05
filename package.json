@@ -17,12 +17,22 @@
     "webpack-dev-server": "^3.8.2"
   },
   "dependencies": {
+    "@types/async": "^3.0.2",
+    "@types/chalk": "^2.2.0",
+    "@types/jest": "^24.0.18",
     "@types/jsdom": "^12.2.4",
     "@types/md5-file": "^4.0.0",
     "@types/node": "^12.7.11",
+    "@types/node-cleanup": "^2.1.1",
     "@types/yargs": "^13.0.3",
+    "async": "^3.1.0",
+    "chalk": "^2.4.2",
+    "jest": "^24.9.0",
     "md5-file": "^4.0.0",
     "minimist": "^1.2.0",
+    "node-cleanup": "^2.1.2",
+    "readline-sync": "^1.4.10",
+    "ts-jest": "^24.1.0",
     "yargs": "^14.0.0"
   }
 }
