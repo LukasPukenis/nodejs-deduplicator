@@ -20,7 +20,7 @@ const HIGH_WATERMARK = 1024;
 // hashes are calculated for each file in the file list. If the file list is huge it may produce a lot of
 // unecessary overhead of calculating a lot of stuff at once. Hash calculation is offloaded to web worker
 // however even that should be limited
-const MAX_CONCURRENT_HASHES = 10; // todo: choose best for my machine
+const MAX_CONCURRENT_HASHES = 10;
 
 type Hashtable = Map<string, string>;
 
@@ -152,7 +152,7 @@ export class Deduplicator {
             if (this.verbose) {
                 console.log(`Resuming from offset: ${lastIndex}`);
             }
-            // todo: remove previous entries
+
             return this._process(lastIndex);
         } catch(e) {
             console.error("Error while resuming:", e);
@@ -188,8 +188,6 @@ export class Deduplicator {
 
         try {
             // To enable resuming, we must cap the input buffer to some smaller increment than default 16kb
-            // todo: the more proper way would be to manually read from the file into a buffer, glue all the lines
-            // manually as well and have unlimited paths but that increases complexity
             const inputReadStream = require('fs').createReadStream(FILE_LIST, {highWaterMark: HIGH_WATERMARK, start: offset});
             this.lineReader = readline.createInterface({
                 input: inputReadStream
