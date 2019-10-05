@@ -23,5 +23,4 @@ while read p; do
 done <results.txt
 ```
 ## Limitations
-This tool does not offer a perfect solution if the files are gonna be changed while processing or if before resuming some of the files are deleted or altered. Reasons being that reading a file and calculating the hash are the most expensive parts, so if when resuming the directory would be rehashed it would consume almost same amount of time as it was for deduplicating it thus rendering such an operation useless. Also saving list of files processed is tricky as file's may be removed after hashing them, we have no way of knowing that unless attaching some event listeners on IO to report on that.
-This tool is best ran in one sequence without altering the source directory and files.
+This tool does not offer a perfect solution if the files are gonna be changed while processing or if before resuming some of the files are deleted or altered. Reading a file and calculating it's hash are the most expensive parts so if when resuming the deduplication processes would rehash all the files to see if anything has changed - it would render the resuming useless as it would spend almost same amount of time as just starting from scratch.
