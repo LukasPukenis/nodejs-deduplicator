@@ -40,7 +40,7 @@ module.exports = {
 	mode: IS_DEV ? "development" : "production",
 	context: __dirname,
 	entry: {
-		main: "./src/main.ts"		
+		index: "./src/index.ts"
 	},
 	output: {
 		path: path.join(__dirname, "dist/js/"),
