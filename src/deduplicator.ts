@@ -61,6 +61,7 @@ export class Deduplicator {
                 return false;
             } else {
 
+                console.log("Cleaning up");
                 if (fs.existsSync(LOCK_FILE)) {
                     if (this.verbose) {
                         console.log("Removing lockfile");
@@ -78,6 +79,8 @@ export class Deduplicator {
                 }
                 process.kill(process.pid, signal);
                 nodeCleanup.uninstall();
+
+                console.log("Exiting");
                 return false;
             }
         });
@@ -196,8 +199,13 @@ export class Deduplicator {
             this.lineReader.on('line', async (filename: string) => {
                 // lineReader doesnt immediately close so use a flag for avoiding unecessary work
                 // https://nodejs.org/api/readline.html#readline_rl_close
-
                 if (this.aborted) {
+                    return;
+                }
+
+                // because we made a file list the file itself may be already gone
+                // especially true when resuming
+                if (!fs.existsSync(filename)) {
                     return;
                 }
 
