@@ -27,7 +27,7 @@ export class FileLogger implements Logger {
     }
 }
 
-export class ScreenLogger implements Logger {
+export class ConsoleLogger implements Logger {
     constructor() {}
     log(message: string): void {
         console.log(message);

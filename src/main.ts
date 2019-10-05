@@ -16,7 +16,6 @@ result   -  filename of a result file. If not provided {deduplicate-results-toda
     process.exit(0);
 }
 
-console.log('args:', argv);
 const dir = argv.dir || argv._[0] || ".";
 
 const resultFile = argv.result || `dedup-results-${new Date().getTime()}.txt`;
@@ -26,6 +25,5 @@ const runner = new Deduplicator(dir, resultFile);
 runner.setVerbose(argv.verbose);
 
 (async () => {
-    const result = await runner.process();
-    console.log("Deduplication was", result);
+    await runner.process();
 })();
