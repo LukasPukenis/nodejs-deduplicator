@@ -1,38 +1,44 @@
-var endOfLine = require('os').EOL;
+const endOfLine = require('os').EOL;
 import fs, { WriteStream } from 'fs';
 
-export interface Logger {
+export interface ILogger {
     open(): void;
     close(): void;
     log(message: string): void;
 }
 
-export class FileLogger implements Logger {
+export class FileLogger implements ILogger {
     private stream: WriteStream;
 
     constructor(private path: string) {
     }
 
-    log(message: string): void {
+    public log(message: string): void {
         console.assert(this.stream, "FileLogger must be opened before logging");
         this.stream.write(message + endOfLine);
     }
 
-    close(): void {
+    public close(): void {
         this.stream.end();
     }
 
-    open(): void {
+    public open(): void {
         this.stream = fs.createWriteStream(this.path, { flags: 'a'});
     }
 }
 
-export class ConsoleLogger implements Logger {
-    constructor() {}
-    log(message: string): void {
+export class ConsoleLogger implements ILogger {
+    constructor() {
+        // nothing to do with console
+    }
+    public log(message: string): void {
         console.log(message);
     }
 
-    close(): void {}
-    open(): void {}
+    public close(): void {
+        // nothing to do with console
+    }
+    public open(): void {
+        // nothing to do with console
+    }
 }

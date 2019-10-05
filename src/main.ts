@@ -1,7 +1,5 @@
-console.clear();
 import { Deduplicator } from './deduplicator';
-
-var argv = require('minimist')(process.argv.slice(2));
+const argv = require('minimist')(process.argv.slice(2));
 
 console.log("Deduplicator - an experiment of deduplicating files");
 

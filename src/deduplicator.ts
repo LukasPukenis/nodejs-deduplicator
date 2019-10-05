@@ -1,14 +1,14 @@
-import { Logger, FileLogger, ConsoleLogger } from './logger';
-const md5File = require('md5-file/promise')
-var endOfLine = require('os').EOL;
-const readline = require('readline');
-var readlineSync = require('readline-sync');
-var nodeCleanup = require('node-cleanup');
+import fs from 'fs';
 
+import { FileLogger, ILogger } from './logger';
+
+const md5File = require('md5-file/promise');
+const endOfLine = require('os').EOL;
+const readlineSync = require('readline-sync');
+const nodeCleanup = require('node-cleanup');
 const chalk = require('chalk');
 
 const { resolve } = require('path');
-import fs, { WriteStream } from 'fs';
 const { readdir } = require('fs').promises;
 
 // hashes are calculated for each file in the file list. If the file list is huge it may produce a lot of
@@ -47,7 +47,7 @@ const LOCK_FILE = 'deduplicate.lock';
 const HIGH_WATERMARK = 1024;
 
 export class Deduplicator {
-    private resultLogger: Logger;
+    private resultLogger: ILogger;
     private verbose: boolean;
     private bytesRead: [number, number];
     private lineReader: any;
@@ -63,7 +63,7 @@ export class Deduplicator {
          * to enable resume in the future
          */
         nodeCleanup((exitCode: number, signal: number) => {
-            if (exitCode != 0 || exitCode == null) {
+            if (exitCode !== 0 || exitCode == null) {
                 if (this.verbose) {
                     console.log(chalk.red('Aborting...'));
                 }
@@ -168,14 +168,16 @@ export class Deduplicator {
      * After the results file is read, the last line is read
      */
     private async _resume(): Promise<Hashtable> {
-        console.log('continue...')
+        console.log('Resuming...');
         try {
             const lastIndex = parseInt(fs.readFileSync(LOCK_FILE, 'utf8'), 10);
-            console.log(`Resuming from ${lastIndex}`);
+            if (this.verbose) {
+                console.log(`Resuming from offset: ${lastIndex}`);
+            }
             // todo: remove previous entries
             return this._process(lastIndex);
         } catch(e) {
-            console.log("======================", e);
+            console.error("Error while resuming:", e);
         }
     }
 
@@ -196,8 +198,8 @@ export class Deduplicator {
         }
 
         const hashmap: Hashtable = new Map();
-        let resolver: Function = null;
-        let rejector: Function = null;
+        let resolver: (result: Hashtable) => void;
+        let rejector: (error: any) => void;
 
         const promise = new Promise<Hashtable>((resolve, reject) => {
             resolver = resolve;
@@ -234,7 +236,7 @@ export class Deduplicator {
 
                 // update 2 last bytesRead entries as we will use the previous one to seek
                 // the streem if resuming the operation
-                if (this.bytesRead[1] != inputReadStream.bytesRead) {
+                if (this.bytesRead[1] !== inputReadStream.bytesRead) {
                     this.bytesRead = [this.bytesRead[1], inputReadStream.bytesRead];
                 }
 
@@ -262,7 +264,7 @@ export class Deduplicator {
 
                 if (currentlyRunningProcs >= MAX_CONCURRENT_HASHES) {
                     this.lineReader.pause();
-                } else if (currentlyRunningProcs == 0) {
+                } else if (currentlyRunningProcs === 0) {
                     resolver(hashmap);
                 } else if (currentlyRunningProcs < MAX_CONCURRENT_HASHES) {
                     this.lineReader.resume();
