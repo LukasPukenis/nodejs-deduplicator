@@ -188,7 +188,7 @@ export class Deduplicator {
 
         try {
             // To enable resuming, we must cap the input buffer to some smaller increment than default 16kb
-            const inputReadStream = require('fs').createReadStream(FILE_LIST, {highWaterMark: HIGH_WATERMARK, start: offset});
+            const inputReadStream = fs.createReadStream(FILE_LIST, {highWaterMark: HIGH_WATERMARK, start: offset});
             this.lineReader = readline.createInterface({
                 input: inputReadStream
             });
