@@ -3,7 +3,11 @@
 
 
 ## Usage
-Before using you must compile it as compiled source is not provided.
+Before using you must compile it as compiled source is not provided. Some example commands:
+
+`node dist/js/index.js`
+
+`node dist/js/index.js --dir=./node_modules --result=dedup-result1.txt --types=json,md --verbose`
 
 ### Installation
 simply run ```yarn install``` and then
