@@ -47,9 +47,9 @@ export class Deduplicator {
          */
         nodeCleanup((exitCode: number, signal: number) => {
             if (exitCode !== 0 || exitCode == null) {
-                this.cleanupAbort(signal);
+                this._cleanupAbort(signal);
             } else {
-                this.cleanupSuccess(signal);
+                this._cleanupSuccess(signal);
             }
 
             return false;
@@ -120,15 +120,14 @@ export class Deduplicator {
 
         fileListStream.end();
 
-        console.log(`File list written to: ${FILE_LIST}`);
+        if (this.verbose) {
+            console.log(`File list written to: ${FILE_LIST}`);
+        }
     }
 
     /**
-     * Resuming the operation requires knowing the file we processed last. Lock file is deleted after a successful operation
-     * so if it exists it means the operation was canceled prematurely. We could also decide which file is the last one however
-     * that may be ambiguous so lock file contains the filename of results file
-     *
-     * After the results file is read, the last line is read
+     * Resuming the operation requires knowing the file which we processed last. Lock file is deleted after a successful operation
+     * so if it exists it means the operation was canceled prematurely
      */
     private async _resume(): Promise<Hashtable> {
         console.log('Resuming...');
@@ -147,11 +146,8 @@ export class Deduplicator {
     /**
      * this method is where real processing happens
      * in case 0 is passed as starting index it's assumed that the whole operation is ran from scratch
-     * otherwise it's a line number inside the file list
-     *
-     * hash list is made from all the files in filelist in both cases and must be done all at once to ensure proper deduplication
-     * and in case it's a resuming operation last entries in result must be deleted with the same hash as provided index becasue
-     * it may have been canceled midway through multiple identical files
+     * otherwise it's an offset inside the file list. This might not be ideal as streams may know nothing about new lines
+     * so we may end up in between the filename string. Best method would be to get rid of streams and process the list manually
      *
      * @param index - starting index from the file list
      */
@@ -173,7 +169,7 @@ export class Deduplicator {
 
         try {
             // To enable resuming, we must cap the input buffer to some smaller increment than default 16kb
-            const inputReadStream = fs.createReadStream(FILE_LIST, {highWaterMark: HIGH_WATERMARK, start: offset});
+            const inputReadStream = fs.createReadStream(FILE_LIST, { highWaterMark: HIGH_WATERMARK, start: offset });
             this.lineReader = readline.createInterface({
                 input: inputReadStream
             });
@@ -185,7 +181,7 @@ export class Deduplicator {
                     return;
                 }
 
-                // because we made a file list the file itself may be already gone
+                // because we made a list before it means there's a chance that the file is already gone
                 // especially true when resuming
                 if (!fs.existsSync(filename)) {
                     return;
@@ -245,7 +241,7 @@ export class Deduplicator {
         return promise;
     }
 
-    private cleanupSuccess(signal: number) {
+    private _cleanupSuccess(signal: number) {
         if (this.verbose) {
             console.log("Cleaning up after success");
         }
@@ -271,7 +267,7 @@ export class Deduplicator {
         console.log("Exiting");
     }
 
-    private cleanupAbort(signal: number) {
+    private _cleanupAbort(signal: number) {
         console.log(chalk.red('Aborting...'));
 
         this.aborted = true;
