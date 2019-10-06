@@ -1,7 +1,7 @@
 import { Deduplicator } from './deduplicator';
 const argv = require('minimist')(process.argv.slice(2));
 
-console.log("Deduplicator - an experiment of deduplicating files");
+console.log("Deduplicator - duplicate files founder");
 
 if (argv.help) {
     console.log(`
@@ -20,7 +20,6 @@ const types = argv.types || '';
 
 const resultFile = argv.result || `dedup-results-${new Date().getTime()}.txt`;
 console.log(`Processing directory: ${dir}`);
-
 
 const runner = new Deduplicator(dir, resultFile, types);
 runner.setVerbose(argv.verbose);
