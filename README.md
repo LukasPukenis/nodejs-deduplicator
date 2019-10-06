@@ -1,5 +1,22 @@
 
+
 ## node.js based tool for finding file duplicates
+
+### Installation
+_Install:_
+```yarn install```
+
+_Build(continuously):_
+```yarn run start```
+
+_You may run tests:_
+```npx jest```
+
+_Now you can run:_
+```node dist/js/index.js --dir=source_directory --result=resultfile```
+
+_Note_:
+you may pass ```--verbose``` flag in case you want to see more information.
 
 
 ## Usage
@@ -8,13 +25,6 @@ Before using you must compile it as compiled source is not provided. Some exampl
 `node dist/js/index.js`
 
 `node dist/js/index.js --dir=./node_modules --result=dedup-result1.txt --types=json,md --verbose`
-
-### Installation
-simply run ```yarn install``` and then
-```node dist/js/index.js --dir=source_directory --result=resultfile```
-you may pass ```--verbose``` flag in case you want to see more information.
-
-you may also run tests via ```npx jest```
 
 ## How it works
 This tool works in asynchronous manner to by first making file list and saving it. Building file list is crucial in enabling the tool to resume operations if canceled.
