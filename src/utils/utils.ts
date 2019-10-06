@@ -11,14 +11,15 @@ export async function* asyncGetFilesRecursive(dir: string): AsyncGenerator<strin
 
         // recursive part
         if (entry.isDirectory()) {
-        yield* asyncGetFilesRecursive(res);
+            yield* asyncGetFilesRecursive(res);
         } else {
-        yield res;
+            yield res;
         }
     }
 }
 
-export function shortenPath(path: string, maxSymbols: number = 40): string {
+// Emit shortened string with preceding "..."
+export function shortenStr(path: string, maxSymbols: number = 40): string {
     const len = path.length;
     return '...' + path.slice(len - maxSymbols);
 }

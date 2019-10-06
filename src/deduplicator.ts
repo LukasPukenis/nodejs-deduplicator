@@ -2,7 +2,7 @@ import fs from 'fs';
 
 import { FileLogger, ILogger } from './logger';
 import { ReadLine } from 'readline';
-import { asyncGetFilesRecursive, shortenPath } from './utils/utils';
+import { asyncGetFilesRecursive, shortenStr } from './utils/utils';
 
 const md5File = require('md5-file/promise');
 const endOfLine = require('os').EOL;
@@ -240,7 +240,7 @@ export class Deduplicator {
                 // we are gonna check if such a has already exists and if so - it's a duplicate. we're judgding that the first
                 // file is the original and all others are duplicates
                 if (this.verbose) {
-                    process.stdout.write(`Identifying ${shortenPath(filename)} `);
+                    process.stdout.write(`Identifying ${shortenStr(filename)} `);
                 }
 
                 if (hashmap.has(hash)) {
