@@ -30,8 +30,11 @@ export class Deduplicator {
     private bytesRead: [number, number];
     private lineReader: ReadLine;
     private aborted: boolean;
-
-    constructor(private path: string, resultPath: string) {
+    private types: string[];
+    constructor(private path: string, resultPath: string, types: string) {
+        if (types) {
+            this.types = types.split(',').map( (type: string) => '.' + type);
+        }
         this.bytesRead = [0, 0];
 
         /**
@@ -127,12 +130,22 @@ export class Deduplicator {
         return true;
     }
 
+    // in order to properly resume operations file list is made so an index could be saved when canceling
     private async _generateFileList(): Promise<void> {
         console.log(`Generating file list for: ${this.path}`);
+        if (this.verbose) {
+            console.log(`Filtering only for extensions: ${this.types.join(' ')}`);
+        }
 
         const fileListStream = fs.createWriteStream(FILE_LIST, { flags: 'a'});
 
         for await (const filename of asyncGetFilesRecursive(this.path)) {
+            if (this.types) {
+                const pass = this.types.find( (type: string) => filename.match(type) != null);
+                if (!pass) {
+                    continue;
+                }
+            }
             fileListStream.write(filename + endOfLine);
         }
 
