@@ -152,6 +152,7 @@ export class Deduplicator {
      * @param index - starting index from the file list
      */
     private async _process(offset = 0): Promise<Hashtable> {
+        console.log("Processing files...")
         if (this.verbose) {
             console.log(`Processing from offset: ${offset}`);
         }
