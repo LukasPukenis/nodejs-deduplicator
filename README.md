@@ -28,6 +28,14 @@ Before using you must compile it as compiled source is not provided. Some exampl
 
 _Note_: In case previous operation was canceled then user will be prompted about resuming the previous operation or restarting it.
 
+## Options
+option      meaning
+help     -  this list
+verbose  -  display intermediate information while processing files
+dir      -  source directory which will be filtered recursively. If ommited then current directory is gonna be used
+result   -  filename of a result file. If not provided {deduplicate-results-todaysDate.txt} is gonna be used
+types    -  comma separated list of extensions
+
 ## How it works
 This tool works in asynchronous manner to by first making file list and saving it. Building file list is crucial in enabling the tool to resume operations if canceled.
 Tool supports canceling and will write a current file index for later. MD5 hashes are calculated asynchronously and limited in how many concurrent calculations can be ran.
