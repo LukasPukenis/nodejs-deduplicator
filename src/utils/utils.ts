@@ -1,3 +1,4 @@
+const endOfLine = require('os').EOL;
 const { resolve } = require('path');
 const { readdir } = require('fs').promises;
 
@@ -22,4 +23,8 @@ export async function* asyncGetFilesRecursive(dir: string): AsyncGenerator<strin
 export function shortenStr(path: string, maxSymbols: number = 40): string {
     const len = path.length;
     return '...' + path.slice(len - maxSymbols);
+}
+
+export function glueStringsWithDelimiter(strings: string[], delimiter: string = endOfLine): string {
+    return strings.join(delimiter);
 }

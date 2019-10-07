@@ -2,7 +2,7 @@ import fs from 'fs';
 
 import { FileLogger, ILogger } from './logger';
 import { ReadLine } from 'readline';
-import { asyncGetFilesRecursive, shortenStr } from './utils/utils';
+import { asyncGetFilesRecursive, shortenStr, glueStringsWithDelimiter } from './utils/utils';
 
 const md5File = require('md5-file/promise');
 const endOfLine = require('os').EOL;
@@ -214,7 +214,8 @@ export class Deduplicator {
                         process.stdout.write(`[${chalk.red('Duplicate')}] ${endOfLine}`);
                     }
 
-                    this.resultLogger.log(filename);
+                    const originalFilename = hashmap.get(hash);
+                    this.resultLogger.log( glueStringsWithDelimiter([originalFilename, filename, '']));
                 } else {
                     if (this.verbose) {
                         process.stdout.write(`[${chalk.blue('Original')}] ${endOfLine}`);
